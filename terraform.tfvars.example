@@ -1,0 +1,17 @@
+// Variables for TF State
+
+location             = ""
+subscription_id      = ""
+state_rg_name        = ""
+keyvault_rg_name     = ""
+storage_account_name = ""
+keyvault_name        = ""
+
+// Variables for Tagging
+
+service_tag     = "Terraform"
+description_tag = "Monitoring PreReqs"
+org_tag         = "Cloud Direct"
+
+
+
