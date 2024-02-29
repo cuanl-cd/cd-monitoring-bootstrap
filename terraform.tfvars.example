@@ -13,5 +13,7 @@ service_tag     = "Terraform"
 description_tag = "Monitoring PreReqs"
 org_tag         = "Cloud Direct"
 
+// Variables for providers.tf template creation
 
+devops_org_service_url = ""
 

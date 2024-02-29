@@ -48,7 +48,7 @@ data "azurerm_key_vault_secret" "cd_azure_devops_pat" {
 }
 
 provider "azuredevops" {
-  org_service_url       = "https://dev.azure.com/clouddirect"
+  org_service_url       = "${devops_org_service_url}"
   personal_access_token = data.azurerm_key_vault_secret.cd_azure_devops_pat.value
 }
 
