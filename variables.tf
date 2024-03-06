@@ -24,6 +24,12 @@ variable "keyvault_name" {
   description = "display name of the keyvault"
 }
 
+// Variables for Azure DevOps
+
+variable "devops_org_service_url" {
+  description = "Specify the Azure DevOps Organization Service URL"  
+}
+
 // Variables for Tagging
 
 variable "service_tag" {
