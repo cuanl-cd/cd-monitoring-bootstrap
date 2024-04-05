@@ -1,0 +1,55 @@
+location                               = "${location}"                                 // This is the location of the resources
+azure_subscription_id                  = "${cust_subscription_id}"     // This is the subscription id of the Azure subscription you want to use
+cust_subscription_name                 = "${cust_subscription_name}"                     // This is the name of the customer subscription
+cust_tenant_id                        = "${cust_tennant_id}" // This is the tennant id of the customer
+managed_identity                       = ""                             // The name of the managed identity
+CDDevOps_Service_Connection_Name       = ""                // The name of the customer service connection on the Cloud Direct DevOps
+customer_repo_name                     = ""                                 // The name of the customer repo on the Cloud Direct GitHub
+log_rg                                 = ""                        // The name of the resource group for the log analytics workspace
+mon_rg                                 = ""                        // The name of the resource group for the monitoring resources
+identity_rg                            = ""                   // The name of the resource group for the identity resources
+law_workspace_name                     = ""                        // The name of the customer log analytics workspace
+action_group_email                     = ""             // The email address for the action group
+cd_cust_service_connection_description = ""              // The description of the customer service connection on the Cloud Direct DevOps
+cd_devops_pat_token = "${devops_key_vault_secret}" // The PAT token for the Cloud Direct DevOps
+cd_github_pat_token = "${github_key_vault_secret}" // The PAT token for the Cloud Direct GitHub
+
+
+// The following variables only need to be commented in and changed if the default values are not acceptable
+
+# federated_credential_display_name = "" // Change this if you don't want the display name to be "cloud-direct-monitoring-federated-credential"
+# federated_credential_name = "" // Change this if you don't want the federated credential name to be "cloud-direct-monitoring-federated-credential"
+#customer_repo_description        = "This repository contains the code for monitoring and alerting"
+
+// The following variables are required parameters for creating the bicep parameters file to deploy Core Monitoring Components. Uncomment and change where required. Current values are the defaults.
+
+#action_group = "true"
+#config_action_group_email = "false"
+#configureActionGroupServiceUri = "false"
+#deployDcr = "true"
+#dcrIntervalSeconds = "60"
+#deployIaaSAlerts = "true"
+#iaasHighCpuPercentageThreshold = "90"
+#iaasMemoryThreshold = "90"
+#iaasDiskSpaceLeftPercentageThreshold = "10"
+#deployAdvisorAlerts = "true"
+#deployHealthAlerts = "true"
+#deployPaaSAlerts = "true"
+#deploySecurityAlerts = "true"
+#deploySqlIaaSAlerts = "true"
+#deploySqlPaaSAlerts = "true"
+
+// The following variables are required parameters for creating the bicep parameters file to deploy the customer Log Analytics Workspace.
+
+CDManaged_tag    = true
+Owner_tag        = ""
+CDProductID_tag  = ""
+CDCustomerID_tag = ""
+DeployedBy_tag   = "Terraform"
+serviceTier      = "PerGB2018"
+dataRetention    = ""
+
+// The following variables are required parameters
+
+#deploy_monitoring_components = true
+#deploymentStackName = "stack-monitoring-components"
