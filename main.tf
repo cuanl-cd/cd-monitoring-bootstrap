@@ -23,7 +23,7 @@ locals {
     cd_azure_devops_pat_secret_name = azurerm_key_vault_secret.cd_azure_devops_pat.name
     key_vault_id                    = azurerm_key_vault.KeyVault.id
     devops_org_service_url          = var.devops_org_service_url
-    cd_github_username              = var.cd_github_username
+    cd_github_org_name              = var.cd_github_org_name
   })
 }
 

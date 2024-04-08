@@ -8,6 +8,7 @@ storage_account_name        = ""
 keyvault_name               = ""
 cd_azure_devops_pat_value   = ""
 cd_github_pat_value         = ""
+cd_github_org_name          = ""
 
 // Variables for Tagging
 

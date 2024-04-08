@@ -64,6 +64,6 @@ variable "org_tag" {
   description = "Specify the Org Tag"
 }
 
-variable "cd_github_username" {
-  description = "Specify the Github Username"
+variable "cd_github_org_name" {
+  description = "Specify the Github Orginization"
 }
