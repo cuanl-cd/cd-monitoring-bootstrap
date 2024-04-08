@@ -8,11 +8,11 @@ variable "cust_subscription_name" {
   description = "Specify the Azure Subscription to deploy into."
 }
 
-variable "cust_tennant_name" {
+variable "cust_tenant_name" {
   description = "Specify the Azure Subscription to deploy into."
 }
 
-variable "cust_tennant_id" {
+variable "cust_tenant_id" {
   description = "Specify the Azure Subscription to deploy into."
 }
 

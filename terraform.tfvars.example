@@ -20,5 +20,5 @@ org_tag         = "Cloud Direct"
 
 devops_org_service_url = "https://dev.azure.com/clouddirect"
 cust_subscription_name = ""
-cust_tennant_id        = ""
-cust_tennant_name      = ""
+cust_tenant_id        = ""
+cust_tenant_name      = ""

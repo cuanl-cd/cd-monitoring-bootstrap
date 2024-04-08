@@ -15,7 +15,7 @@ locals {
 }
 
 locals {
-  terraform_providers = templatefile("${path.module}/providers.tftpl", {
+  terraform_providers = templatefile("${path.module}/templates/providers.tftpl", {
     state_resource_group_name       = var.state_rg_name
     state_storage_account_name      = var.storage_account_name
     state_storage_container_name    = azurerm_storage_container.State.name
@@ -28,12 +28,12 @@ locals {
 }
 
 locals {
-  terraform_tfvars = templatefile("${path.module}/terraform.tfvars.tftpl", {
+  terraform_tfvars = templatefile("${path.module}/templates/terraform.tfvars.tftpl", {
     location                = var.location
     cust_subscription_id    = var.cust_subscription_id
     cust_subscription_name  = var.cust_subscription_name
-    cust_tennant_id         = var.cust_tennant_id
-    cust_tennant_name       = var.cust_tennant_name
+    cust_tenant_id          = var.cust_tenant_id
+    cust_tenant_name        = var.cust_tenant_name
     devops_key_vault_secret = azurerm_key_vault_secret.cd_azure_devops_pat.id
     github_key_vault_secret = azurerm_key_vault_secret.cd_github_pat.id
   })
