@@ -1,11 +1,14 @@
 // Variables for TF State
 
-location             = ""
-subscription_id      = ""
-state_rg_name        = ""
-keyvault_rg_name     = ""
-storage_account_name = ""
-keyvault_name        = ""
+location                    = ""
+cust_subscription_id        = ""
+state_rg_name               = ""
+keyvault_rg_name            = ""
+storage_account_name        = ""
+keyvault_name               = ""
+cd_azure_devops_pat_value   = ""
+cd_github_pat_value         = ""
+cd_github_org_name          = ""
 
 // Variables for Tagging
 
@@ -15,5 +18,7 @@ org_tag         = "Cloud Direct"
 
 // Variables for providers.tf template creation
 
-devops_org_service_url = ""
-
+devops_org_service_url = "https://dev.azure.com/clouddirect"
+cust_subscription_name = ""
+cust_tenant_id        = ""
+cust_tenant_name      = ""

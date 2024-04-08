@@ -29,7 +29,7 @@ provider "azurerm" {
   features {}
 
   subscription_id = var.azure_subscription_id
-  tenant_id       = var.azure_tenant_id
+  tenant_id       = var.cust_tenant_id
 }
 
 data "azurerm_key_vault_secret" "cd_github_pat" {
@@ -39,7 +39,7 @@ data "azurerm_key_vault_secret" "cd_github_pat" {
 
 provider "github" {
   token = data.azurerm_key_vault_secret.cd_github_pat.value
-  owner = "stuartcragg"
+  owner = "${cd_github_org_name}"
 }
 
 data "azurerm_key_vault_secret" "cd_azure_devops_pat" {
@@ -53,6 +53,6 @@ provider "azuredevops" {
 }
 
 provider "azapi" {
-  tenant_id       = var.azure_tenant_id
+  tenant_id       = var.cust_tenant_id
   subscription_id = var.azure_subscription_id
 }
