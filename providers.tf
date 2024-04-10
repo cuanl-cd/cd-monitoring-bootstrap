@@ -8,6 +8,6 @@ terraform {
 }
 
 provider "azurerm" {
-  subscription_id = var.cust_subscription_id
   features {}
+  subscription_id = var.customer_subscription_id
 }
