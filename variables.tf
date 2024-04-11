@@ -7,7 +7,7 @@ variable "customer_tenant_id" {
   validation {
     condition     = length(var.customer_tenant_id) == 36
     error_message = "The customer_tenant_id must be a valid GUID."
-    }
+  }
 }
 
 variable "customer_tenant_name" {
@@ -41,14 +41,9 @@ variable "customer_subscription_name" {
   }
 }
 
-variable "cd_azure_devops_pat_value" {
-  description = "Value of the Azure DevOps personal access token"
+variable "cd_github_repo_name" {
+  description = "The name of the customer GitHub repository."
   type        = string
-
-  validation {
-    condition     = length(var.cd_azure_devops_pat_value) > 0
-    error_message = "The cd_azure_devops_pat_value must be a valid string."
-  }
 }
 
 variable "cd_github_pat_value" {
@@ -62,8 +57,17 @@ variable "cd_github_pat_value" {
   }
 }
 
+variable "workspace_id" {
+  description = "The Log Analytics workspace ID."
+  type        = string
 
-// Defaulted variables for Terraform state
+  validation {
+    condition     = length(var.workspace_id) > 0 && can(regex("^/subscriptions/.*/resourceGroups/.*/providers/.*", var.workspace_id))
+    error_message = "The workspace_id must be a valid GUID."
+  }
+}
+
+// Defaulted variables
 
 variable "location" {
   description = "Specify the Azure region to deploy into."
@@ -71,17 +75,12 @@ variable "location" {
   type        = string
 }
 
-variable "state_rg_name" {
-  description = "Display name for the Terraform state resource group"
-  default     = "azure-monitor-terraform-state"
+variable "resource_group_name" {
+  description = "Display name for the resource group"
+  default     = null
   type        = string
 }
 
-variable "key_vault_rg_name" {
-  description = "Display name of the Terraform state key vault resource group"
-  default     = "azure-monitor-key-vault"
-  type        = string
-}
 
 variable "storage_account_name" {
   description = "Display name of the storage account for the Terraform state"
@@ -94,29 +93,13 @@ variable "storage_account_name" {
   }
 }
 
-variable "key_vault_name" {
-  description = "Display name of the key vault"
-  default     = "azure-monitor-key-vault"
-  type        = string
-}
-
-// Variables for GitHub
-
 variable "cd_github_org_name" {
   description = "Specify the Github Organization"
   default     = "Cloud-Direct-Morpheus"
   type        = string
 }
 
-// Variables for Azure DevOps
-
-variable "devops_org_service_url" {
-  description = "Specify the Azure DevOps Organization Service URL"
-  default     = "https://dev.azure.com/clouddirect"
-  type        = string
-}
-
-// Variables for tagging
+// Tagging variables
 
 variable "service_tag" {
   description = "Specify the Service Tag"
