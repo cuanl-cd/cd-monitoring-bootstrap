@@ -1,9 +1,9 @@
 data "azurerm_client_config" "current" {}
 
 locals {
-  uniq = substr(sha1(azurerm_resource_group.rg.id), 0, 8)
 
-  tags = tomap(
+
+  tags = var.tags !=null ? var.tags : tomap(
     {
       "service"     = var.service_tag
       "description" = var.description_tag
@@ -11,18 +11,20 @@ locals {
     }
   )
 
-  storage_account_name = var.storage_account_name != null ? var.storage_account_name : "cdmonitoring${local.uniq}"
+  uniq = substr(sha1(azurerm_resource_group.rg.id), 0, 8)
+
   resource_group_name  = var.resource_group_name != null ? var.resource_group_name : "rg-cdmonitoring-prod-${local.region_short}-001"
+  storage_account_name = var.storage_account_name != null ? var.storage_account_name : "cdmonitoring${local.uniq}"
 
   repo = format("%s/%s", var.cd_github_org_name, var.cd_github_repo_name)
 
-  subject = format("repo:%s:job_workflow_ref:%s/.github/workflows/%s@refs/heads/%s",
-    local.repo,
-    local.repo,
-    "monitoring.yaml",
-    "main"
-  )
-
+  subjects = { for filename in ["monitoring.yaml", "terraform.yaml"] :
+    filename => format("repo:%s:job_workflow_ref:%s/.github/workflows/%s@refs/heads/main",
+      local.repo,
+      local.repo,
+      filename
+    )
+  }
   region_map = {
     "UK South" = "uksouth"
     "UK West"  = "ukwest"
@@ -78,16 +80,18 @@ resource "azurerm_user_assigned_identity" "github" {
 }
 
 resource "azurerm_federated_identity_credential" "github" {
-  name                = var.cd_github_repo_name
+  for_each = local.subjects
+
+  name                = replace(each.key, ".", "_")
   resource_group_name = azurerm_resource_group.rg.name
   parent_id           = azurerm_user_assigned_identity.github.id
 
   audience = ["api://AzureADTokenExchange"]
   issuer   = "https://token.actions.githubusercontent.com"
-  subject  = local.subject
+  subject  = each.value
 }
 
-resource "azurerm_role_assignment" "example" {
+resource "azurerm_role_assignment" "github" {
   for_each             = toset(["Tag Contributor", "Monitoring Contributor", "Storage Blob Data Contributor"])
   scope                = azurerm_resource_group.rg.id
   role_definition_name = each.value

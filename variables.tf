@@ -109,7 +109,7 @@ variable "service_tag" {
 
 variable "description_tag" {
   description = "Specify the Description Tag"
-  default     = "Monitoring Bootstrap"
+  default     = "Monitoring"
   type        = string
 }
 
@@ -117,4 +117,10 @@ variable "org_tag" {
   description = "Specify the Org Tag"
   default     = "Cloud Direct"
   type        = string
+}
+
+variable "tags" {
+  description = "Specify a map if tags to apply to the resources. Overrides the default tags above."
+  default     = null
+  type        = map(string)
 }
