@@ -1,3 +1,6 @@
+# Anything in secrets
+secrets/*
+
 # Local .terraform directories
 **/.terraform/*
 
