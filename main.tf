@@ -153,3 +153,17 @@ resource "github_repository_file" "tfvars" {
   tags = ${jsonencode(local.tags)}
   EOF
 }
+
+resource "github_repository_file" "bicep_params" {
+  repository          = var.cd_github_repo_name
+  branch              = "main"
+  file                = "parameters/coreMonitoringComponents.bicepparam"
+  overwrite_on_create = true
+
+  content = templatefile("${path.module}/templates/coreMonitoringComponents.bicepparam.tftpl", {
+    location = var.location,
+    workspace_resource_group_name = split("/", var.workspace_id)[4],
+    workspace_name = split("/", var.workspace_id)[8],
+    action_group_webhook_uri = file("${path.module}/secrets/action_group_webhook_uri.txt")
+  })
+}

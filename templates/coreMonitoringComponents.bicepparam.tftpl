@@ -1,0 +1,80 @@
+using './coreMonitoringComponents.bicep'
+
+// --------- Parameters with required changes --------- //
+
+// Global
+param location = '${location}'
+//// Make sure this Resource Group IS the same one that the workspace is deployed to
+param lawResourceGroupName = '${workspace_resource_group_name}'
+
+// Workspace
+//// Make sure this Workspace Name DOES match the workspaceDeployment.bicepparam entry
+param workspaceName = '${workspace_name}'
+
+// Action Group
+param actionGroup = true
+param configureActionGroupEmail = false
+param actionGroupEmail = ''
+param configureActionGroupServiceUri = false
+
+// IaaS
+param deployDcr = true
+param dcrIntervalSeconds = 60
+param deployIaaSAlerts = true
+param iaasHighCpuPercentageThreshold = 90
+param iaasMemoryThreshold = 90
+param iaasDiskSpaceLeftPercentageThreshold = 10
+
+// Advisor
+param deployAdvisorAlerts = true
+
+// Health
+param deployHealthAlerts = true
+
+// PaaS
+param deployPaaSAlerts = true
+
+// Security
+param deploySecurityAlerts = true
+
+// SQL Bolt On
+param deploySqlIaaSAlerts = true
+param deploySqlPaaSAlerts = true
+
+// --------- Parameters --------- //
+
+// Action Group
+param actionGroupTags = {
+  Owner : 'Cloud Direct'
+}
+
+param actionGroupName = 'CD-Alert-AG'
+param actionGroupDisplayName = 'CD-ALERT-AG'
+param actionGroupWebHookUri = '${action_group_webhook_uri}'
+
+// IaaS
+param dcrName = 'cd-dcr-uks-01'
+param dcrTags = {
+  Owner : 'Cloud Direct'
+  CDProductID : 'WAF-SUP-MAN'
+}
+
+param iaasAlertRuleTags = {
+  Owner : 'Cloud Direct'
+  CDAlertCategory : 'IaaS'
+  CDProductID : 'WAF-SUP-MAN'
+}
+
+// PaaS
+param paasAlertRuleTags = {
+  Owner : 'Cloud Direct'
+  CDAlertCategory : 'PaaS'
+  CDProductID : 'WAF-SUP-MAN'
+}
+
+// Security
+param securityAlertRuleTags = {
+  Owner : 'Cloud Direct'
+  CDAlertCategory : 'Security'
+  CDProductID : 'WAF-SUP-MAN'
+}
