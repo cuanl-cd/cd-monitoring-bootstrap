@@ -3,7 +3,7 @@ data "azurerm_client_config" "current" {}
 locals {
 
 
-  tags = var.tags !=null ? var.tags : tomap(
+  tags = var.tags != null ? var.tags : tomap(
     {
       "service"     = var.service_tag
       "description" = var.description_tag
@@ -16,15 +16,6 @@ locals {
   resource_group_name  = var.resource_group_name != null ? var.resource_group_name : "rg-cdmonitoring-prod-${local.region_short}-001"
   storage_account_name = var.storage_account_name != null ? var.storage_account_name : "cdmonitoring${local.uniq}"
 
-  repo = format("%s/%s", var.cd_github_org_name, var.cd_github_repo_name)
-
-  subjects = { for filename in ["monitoring.yaml", "terraform.yaml"] :
-    filename => format("repo:%s:job_workflow_ref:%s/.github/workflows/%s@refs/heads/main",
-      local.repo,
-      local.repo,
-      filename
-    )
-  }
   region_map = {
     "UK South" = "uksouth"
     "UK West"  = "ukwest"
@@ -80,15 +71,13 @@ resource "azurerm_user_assigned_identity" "github" {
 }
 
 resource "azurerm_federated_identity_credential" "github" {
-  for_each = local.subjects
-
-  name                = replace(each.key, ".", "_")
+  name                = replace(var.cd_github_repo_name, "-", "_")
   resource_group_name = azurerm_resource_group.rg.name
   parent_id           = azurerm_user_assigned_identity.github.id
 
   audience = ["api://AzureADTokenExchange"]
   issuer   = "https://token.actions.githubusercontent.com"
-  subject  = each.value
+  subject  = "repo:${var.cd_github_org_name}/${var.cd_github_repo_name}:ref:refs/heads/main"
 }
 
 resource "azurerm_role_assignment" "github" {
@@ -105,6 +94,7 @@ resource "github_actions_variable" "github" {
     "client_id"                     = azurerm_user_assigned_identity.github.client_id,
     "resource_group_name"           = azurerm_resource_group.rg.name,
     "storage_account_name"          = azurerm_storage_account.state.name,
+    "location"                      = var.location,
     "workspace_subscription_id"     = split("/", var.workspace_id)[2],
     "workspace_resource_group_name" = split("/", var.workspace_id)[4],
     "workspace_name"                = split("/", var.workspace_id)[8],
@@ -114,4 +104,35 @@ resource "github_actions_variable" "github" {
   repository    = var.cd_github_repo_name
   variable_name = each.key
   value         = each.value
+}
+
+resource "github_actions_secret" "app_id" {
+  repository      = var.cd_github_repo_name
+  secret_name     = "MONITORING_MODULE_APP_ID"
+  plaintext_value = "877225"
+}
+
+resource "github_actions_secret" "private_key" {
+  repository      = var.cd_github_repo_name
+  secret_name     = "MONITORING_MODULE_PRIVATE_KEY"
+  plaintext_value = file("${path.module}/files/github_app.pem")
+
+  // Note that this is a harmless private key as it can only read
+  // and it cannot be used outside of the organisation.
+}
+
+resource "github_repository_file" "tfvars" {
+  repository          = var.cd_github_repo_name
+  branch              = "main"
+  file                = "terraform/bootstrap.auto.tfvars"
+  overwrite_on_create = true
+
+  content = <<-EOF
+  subscription_id               = "${var.customer_subscription_id}"
+  resource_group_name           = "${azurerm_resource_group.rg.name}"
+  storage_account_name          = "${azurerm_storage_account.state.name}"
+  location                      = "${var.location}"
+
+  tags = ${jsonencode(local.tags)}
+  EOF
 }
