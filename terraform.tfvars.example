@@ -1,24 +1,13 @@
-// Variables for Terraform state
-
-location                    = ""
-customer_subscription_id        = ""
-state_rg_name               = ""
-key_vault_rg_name            = ""
-storage_account_name        = ""
-key_vault_name               = ""
-cd_azure_devops_pat_value   = ""
-cd_github_pat_value         = ""
-cd_github_org_name          = ""
-
-// Variables for tagging
-
-service_tag     = "Terraform"
-description_tag = "Monitoring PreReqs"
-org_tag         = "Cloud Direct"
-
-// Variables for providers.tf template creation
-
-devops_org_service_url = "https://dev.azure.com/clouddirect"
+customer_tenant_id         = ""
+customer_tenant_name       = ""
+customer_subscription_id   = ""
 customer_subscription_name = ""
-customer_tenant_id        = ""
-customer_tenant_name      = ""
+cd_github_repo_name        = ""
+cd_github_pat_value        = ""
+workspace_id               = ""
+
+tags = {
+  service     = "Terraform"
+  description = "Monitoring"
+  org         = "Cloud Direct"
+}
