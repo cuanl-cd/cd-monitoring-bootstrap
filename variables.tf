@@ -81,7 +81,6 @@ variable "resource_group_name" {
   type        = string
 }
 
-
 variable "storage_account_name" {
   description = "Display name of the storage account for the Terraform state"
   default     = null
@@ -101,26 +100,8 @@ variable "cd_github_org_name" {
 
 // Tagging variables
 
-variable "service_tag" {
-  description = "Specify the Service Tag"
-  default     = "Terraform"
-  type        = string
-}
-
-variable "description_tag" {
-  description = "Specify the Description Tag"
-  default     = "Monitoring"
-  type        = string
-}
-
-variable "org_tag" {
-  description = "Specify the Org Tag"
-  default     = "Cloud Direct"
-  type        = string
-}
-
 variable "tags" {
-  description = "Specify a map if tags to apply to the resources. Overrides the default tags above."
+  description = "Specify a map if tags to apply to the resources."
   default     = null
   type        = map(string)
 }

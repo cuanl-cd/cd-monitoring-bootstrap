@@ -2,9 +2,11 @@ customer_tenant_id         = ""
 customer_tenant_name       = ""
 customer_subscription_id   = ""
 customer_subscription_name = ""
+location                   = "UK South"
+workspace_id               = ""
+
 cd_github_repo_name        = ""
 cd_github_pat_value        = ""
-workspace_id               = ""
 
 tags = {
   service     = "Terraform"
