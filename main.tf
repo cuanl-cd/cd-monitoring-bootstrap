@@ -89,21 +89,29 @@ resource "azurerm_role_assignment" "github" {
 
 resource "github_actions_variable" "github" {
   for_each = {
-    "tenant_id"                     = var.customer_tenant_id,
-    "subscription_id"               = var.customer_subscription_id,
-    "client_id"                     = azurerm_user_assigned_identity.github.client_id,
-    "resource_group_name"           = azurerm_resource_group.rg.name,
-    "storage_account_name"          = azurerm_storage_account.state.name,
-    "location"                      = var.location,
-    "workspace_subscription_id"     = split("/", var.workspace_id)[2],
-    "workspace_resource_group_name" = split("/", var.workspace_id)[4],
-    "workspace_name"                = split("/", var.workspace_id)[8],
-    "workspace_id"                  = var.workspace_id
+    "TENANT_ID"                     = var.customer_tenant_id,
+    "SUBSCRIPTION_ID"               = var.customer_subscription_id,
+    "RESOURCE_GROUP_NAME"           = azurerm_resource_group.rg.name,
+    "STORAGE_ACCOUNT_NAME"          = azurerm_storage_account.state.name,
+    "LOCATION"                      = var.location,
+    "WORKSPACE_SUBSCRIPTION_ID"     = split("/", var.workspace_id)[2],
+    "WORKSPACE_RESOURCE_GROUP_NAME" = split("/", var.workspace_id)[4],
+    "WORKSPACE_NAME"                = split("/", var.workspace_id)[8],
+    "WORKSPACE_ID"                  = var.workspace_id,
+    "MASTER_TEMPLATES_GIT_ORG"      = "Cloud-Direct",
+    "MASTER_TEMPLATES_GIT_REPO"     = "Azure_Monitor_Templates",
+    "MASTER_TEMPLATES_GIT_BRANCH"   = "main"
   }
 
   repository    = var.cd_github_repo_name
   variable_name = each.key
   value         = each.value
+}
+
+resource "github_actions_secret" "client_id" {
+  repository      = var.cd_github_repo_name
+  secret_name     = "CLIENT_ID"
+  plaintext_value = azurerm_user_assigned_identity.github.client_id
 }
 
 resource "github_actions_secret" "app_id" {
@@ -115,10 +123,19 @@ resource "github_actions_secret" "app_id" {
 resource "github_actions_secret" "private_key" {
   repository      = var.cd_github_repo_name
   secret_name     = "MONITORING_MODULE_PRIVATE_KEY"
-  plaintext_value = file("${path.module}/files/github_app.pem")
+  plaintext_value = file("${path.module}/secrets/github_app.pem")
+}
 
-  // Note that this is a harmless private key as it can only read
-  // and it cannot be used outside of the organisation.
+resource "github_actions_secret" "ssh_key" {
+  repository      = var.cd_github_repo_name
+  secret_name     = "SSH_KEY"
+  plaintext_value = file("${path.module}/secrets/project_morpheus_ssh_key.txt")
+}
+
+resource "github_actions_secret" "known_hosts" {
+  repository      = var.cd_github_repo_name
+  secret_name     = "KNOWN_HOSTS"
+  plaintext_value = file("${path.module}/secrets/project_morpheus_known_hosts.txt")
 }
 
 resource "github_repository_file" "tfvars" {
