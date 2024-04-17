@@ -6,8 +6,8 @@ The files may be downloaded from <https://github.com/Cloud-Direct-Monitoring/cd-
 
 * action_group_webhook_uri.txt
 * github_app.pem
-* project_morpheus_known_hosts.txt
-* project_morpheus_ssh_key.txt
+* known_hosts.txt
+* ssh_key.txt
 
 The secrets are reference in the client repo's workflows.
 

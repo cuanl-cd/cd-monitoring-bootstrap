@@ -144,13 +144,13 @@ resource "github_actions_secret" "private_key" {
 resource "github_actions_secret" "ssh_key" {
   repository      = var.cd_github_repo_name
   secret_name     = "SSH_KEY"
-  plaintext_value = file("${path.module}/secrets/project_morpheus_ssh_key.txt")
+  plaintext_value = file("${path.module}/secrets/ssh_key.txt")
 }
 
 resource "github_actions_secret" "known_hosts" {
   repository      = var.cd_github_repo_name
   secret_name     = "KNOWN_HOSTS"
-  plaintext_value = file("${path.module}/secrets/project_morpheus_known_hosts.txt")
+  plaintext_value = file("${path.module}/secrets/known_hosts.txt")
 }
 
 resource "github_repository_file" "tfvars" {
