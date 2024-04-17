@@ -108,6 +108,7 @@ resource "azurerm_role_definition" "workspace_link_contributor" {
 
   permissions {
     actions = [
+      "Microsoft.Insights/scheduledqueryrules/*",
       "Microsoft.OperationalInsights/workspaces/read",
       "Microsoft.OperationalInsights/workspaces/sharedKeys/action"
     ]
