@@ -101,6 +101,29 @@ resource "azurerm_role_assignment" "deployment_stacks_contributor" {
   principal_id       = azurerm_user_assigned_identity.github.principal_id
 }
 
+resource "azurerm_role_definition" "workspace_link_contributor" {
+  name        = "Azure Monitor Workspace Link Contributor"
+  scope       = var.workspace_id
+  description = "Custom role to link DCRs to an Azure Monitor workspace."
+
+  permissions {
+    actions = [
+      "Microsoft.OperationalInsights/workspaces/read",
+      "Microsoft.OperationalInsights/workspaces/sharedKeys/action"
+    ]
+    not_actions = []
+  }
+
+  assignable_scopes = [
+    var.workspace_id
+  ]
+}
+
+resource "azurerm_role_assignment" "workspace_link_contributor" {
+  scope              = avar.workspace_id
+  role_definition_id = azurerm_role_definition.workspace_link_contributor.role_definition_resource_id
+  principal_id       = azurerm_user_assigned_identity.github.principal_id
+}
 
 resource "github_actions_variable" "github" {
   for_each = {
