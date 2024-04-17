@@ -16,7 +16,7 @@ locals {
   workspace_resource_group_id = join("/", slice(split("/", var.workspace_id), 0, 5))
 }
 
-// Create resource groups
+// Resource group and storage account
 
 resource "azurerm_resource_group" "rg" {
   name     = local.resource_group_name
@@ -55,6 +55,8 @@ resource "azurerm_storage_container" "state" {
     azurerm_storage_account.state
   ]
 }
+
+// User assigned identity and role assignments
 
 resource "azurerm_user_assigned_identity" "github" {
   name                = "id-cdmonitoring-prod-${local.region_short}-001"
@@ -103,9 +105,10 @@ resource "azurerm_role_assignment" "deployment_stacks_contributor" {
   principal_id       = azurerm_user_assigned_identity.github.principal_id
 }
 
+/*
 resource "azurerm_role_definition" "workspace_link_contributor" {
   name        = "Azure Monitor Workspace Link Contributor"
-  scope       = local.workspace_resource_group_id
+  scope       = var.workspace_id
   description = "Custom role to link DCRs to an Azure Monitor workspace."
 
   permissions {
@@ -118,15 +121,18 @@ resource "azurerm_role_definition" "workspace_link_contributor" {
   }
 
   assignable_scopes = [
-    local.workspace_resource_group_id
+    var.workspace_id
   ]
 }
+*/
 
-resource "azurerm_role_assignment" "workspace_link_contributor" {
-  scope              = local.workspace_resource_group_id
-  role_definition_id = azurerm_role_definition.workspace_link_contributor.role_definition_resource_id
-  principal_id       = azurerm_user_assigned_identity.github.principal_id
+resource "azurerm_role_assignment" "workspace_contributor" {
+  scope                = var.workspace_id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_user_assigned_identity.github.principal_id
 }
+
+// Github Actions
 
 resource "github_actions_variable" "github" {
   for_each = {
@@ -184,6 +190,8 @@ resource "github_actions_secret" "known_hosts" {
   secret_name     = "KNOWN_HOSTS"
   plaintext_value = file("${path.module}/secrets/known_hosts.txt")
 }
+
+//Github Repository Files
 
 resource "github_repository_file" "tfvars" {
   repository          = var.cd_github_repo_name
