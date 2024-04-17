@@ -1,16 +1,6 @@
 data "azurerm_client_config" "current" {}
 
 locals {
-
-
-  tags = var.tags != null ? var.tags : tomap(
-    {
-      "service"     = var.service_tag
-      "description" = var.description_tag
-      "org"         = var.org_tag
-    }
-  )
-
   uniq = substr(sha1(azurerm_resource_group.rg.id), 0, 8)
 
   resource_group_name  = var.resource_group_name != null ? var.resource_group_name : "rg-cdmonitoring-prod-${local.region_short}-001"
@@ -29,14 +19,14 @@ locals {
 resource "azurerm_resource_group" "rg" {
   name     = local.resource_group_name
   location = var.location
-  tags     = local.tags
+  tags     = var.tags
 }
 
 resource "azurerm_storage_account" "state" {
   name                = local.storage_account_name
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  tags                = local.tags
+  tags                = var.tags
 
   account_tier              = "Standard"
   account_kind              = "BlobStorage"
@@ -81,11 +71,36 @@ resource "azurerm_federated_identity_credential" "github" {
 }
 
 resource "azurerm_role_assignment" "github" {
-  for_each             = toset(["Tag Contributor", "Monitoring Contributor", "Storage Blob Data Contributor"])
+  for_each             = toset(["Monitoring Contributor", "Storage Blob Data Contributor"])
   scope                = azurerm_resource_group.rg.id
   role_definition_name = each.value
   principal_id         = azurerm_user_assigned_identity.github.principal_id
 }
+
+resource "azurerm_role_definition" "deployment_stacks_contributor" {
+  name        = "Deployment Stacks Contributor"
+  scope       = azurerm_resource_group.rg.id
+  description = "Custom role to manage deployment stacks and deployments."
+
+  permissions {
+    actions = [
+      "Microsoft.Resources/deploymentStacks/*",
+      "Microsoft.Resources/deployments/*"
+    ]
+    not_actions = []
+  }
+
+  assignable_scopes = [
+    azurerm_resource_group.rg.id
+  ]
+}
+
+resource "azurerm_role_assignment" "deployment_stacks_contributor" {
+  scope              = azurerm_resource_group.rg.id
+  role_definition_id = azurerm_role_definition.deployment_stacks_contributor.role_definition_resource_id
+  principal_id       = azurerm_user_assigned_identity.github.principal_id
+}
+
 
 resource "github_actions_variable" "github" {
   for_each = {
@@ -150,7 +165,7 @@ resource "github_repository_file" "tfvars" {
   storage_account_name          = "${azurerm_storage_account.state.name}"
   location                      = "${var.location}"
 
-  tags = ${jsonencode(local.tags)}
+  tags = ${jsonencode(var.tags != null ? var.tags : {})}
   EOF
 }
 
@@ -161,9 +176,9 @@ resource "github_repository_file" "bicep_params" {
   overwrite_on_create = true
 
   content = templatefile("${path.module}/templates/coreMonitoringComponents.bicepparam.tftpl", {
-    location = var.location,
+    location                      = var.location,
     workspace_resource_group_name = split("/", var.workspace_id)[4],
-    workspace_name = split("/", var.workspace_id)[8],
-    action_group_webhook_uri = file("${path.module}/secrets/action_group_webhook_uri.txt")
+    workspace_name                = split("/", var.workspace_id)[8],
+    action_group_webhook_uri      = file("${path.module}/secrets/action_group_webhook_uri.txt")
   })
 }
