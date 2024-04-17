@@ -93,8 +93,8 @@ variable "storage_account_name" {
 }
 
 variable "cd_github_org_name" {
-  description = "Specify the Github Organization"
-  default     = "Cloud-Direct-Morpheus"
+  description = "Specify the GitHub Organization"
+  default     = "Cloud-Direct-Monitoring"
   type        = string
 }
 
