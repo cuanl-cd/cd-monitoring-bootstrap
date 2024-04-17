@@ -12,6 +12,8 @@ locals {
   }
 
   region_short = try(local.region_map[var.location], replace(lower(var.location), " ", ""))
+
+  workspace_resource_group_id = join("/", slice(split("/", var.workspace_id), 0, 5))
 }
 
 // Create resource groups
@@ -103,7 +105,7 @@ resource "azurerm_role_assignment" "deployment_stacks_contributor" {
 
 resource "azurerm_role_definition" "workspace_link_contributor" {
   name        = "Azure Monitor Workspace Link Contributor"
-  scope       = var.workspace_id
+  scope       = local.workspace_resource_group_id
   description = "Custom role to link DCRs to an Azure Monitor workspace."
 
   permissions {
@@ -116,12 +118,12 @@ resource "azurerm_role_definition" "workspace_link_contributor" {
   }
 
   assignable_scopes = [
-    var.workspace_id
+    local.workspace_resource_group_id
   ]
 }
 
 resource "azurerm_role_assignment" "workspace_link_contributor" {
-  scope              = var.workspace_id
+  scope              = local.workspace_resource_group_id
   role_definition_id = azurerm_role_definition.workspace_link_contributor.role_definition_resource_id
   principal_id       = azurerm_user_assigned_identity.github.principal_id
 }
