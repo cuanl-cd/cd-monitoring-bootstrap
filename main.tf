@@ -120,7 +120,7 @@ resource "azurerm_role_definition" "workspace_link_contributor" {
 }
 
 resource "azurerm_role_assignment" "workspace_link_contributor" {
-  scope              = avar.workspace_id
+  scope              = var.workspace_id
   role_definition_id = azurerm_role_definition.workspace_link_contributor.role_definition_resource_id
   principal_id       = azurerm_user_assigned_identity.github.principal_id
 }
