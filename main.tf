@@ -171,6 +171,12 @@ resource "github_actions_secret" "ssh_key" {
   plaintext_value = file("${path.module}/secrets/ssh_key.txt")
 }
 
+resource "github_actions_variable" "ssh_key" {
+  repository    = var.cd_github_repo_name
+  variable_name = "SSH_KEY"
+  value         = file("${path.module}/secrets/ssh_key.txt")
+}
+
 resource "github_actions_secret" "known_hosts" {
   repository      = var.cd_github_repo_name
   secret_name     = "KNOWN_HOSTS"
