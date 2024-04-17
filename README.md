@@ -1,4 +1,4 @@
-# terraform-morpheus-bootstrap
+# cd-monitoring-bootstrap
 
 Professional Services repo to bootstrap a customer environment for the deployment of monitoring resources.
 
@@ -9,7 +9,7 @@ Managed Services will provide a set of info for the bootstrap process:
 
 * client repo name
 
-    The name of a customer repo from the template repo in the https://github.com/Cloud-Direct-Morpheus organisation.
+    The name of a customer repo from the template repo in the https://github.com/Cloud-Direct-Monitoring organisation.
 
 * personal access token (PAT)
 
@@ -17,7 +17,7 @@ Managed Services will provide a set of info for the bootstrap process:
 
 * secret files
 
-    A set of files downloaded from the <https://github.com/Cloud-Direct-Morpheus/secrets> repo.
+    A set of files downloaded from the <https://github.com/Cloud-Direct-Monitoring/cd-monitoring-secrets> repo.
 
 You will also need the git binary installed on your machine. Visual Studio Code is also assumed in this guide.
 
@@ -26,7 +26,7 @@ You will also need the git binary installed on your machine. Visual Studio Code 
 1. Clone the repo
 
     ```shell
-    git clone https://github.com/Cloud-Direct/terraform-morpheus-bootstrap customer
+    git clone https://github.com/Cloud-Direct/cd-momnitoring-bootstrap customer
     ```
 
      Change `customer` to a customer shortcode.
