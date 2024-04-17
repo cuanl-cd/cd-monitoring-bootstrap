@@ -114,7 +114,7 @@ resource "github_actions_variable" "github" {
     "WORKSPACE_NAME"                = split("/", var.workspace_id)[8],
     "WORKSPACE_ID"                  = var.workspace_id,
     "MASTER_TEMPLATES_GIT_ORG"      = "Cloud-Direct",
-    "MASTER_TEMPLATES_GIT_REPO"     = "Azure_Monitor_Templates",
+    "MASTER_TEMPLATES_GIT_REPO"     = "cd-monitoring-azure-templates",
     "MASTER_TEMPLATES_GIT_BRANCH"   = "main"
   }
 
