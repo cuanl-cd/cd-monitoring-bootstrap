@@ -26,7 +26,7 @@ You will also need the git binary installed on your machine. Visual Studio Code 
 1. Clone the repo
 
     ```shell
-    git clone https://github.com/Cloud-Direct/cd-momnitoring-bootstrap customer
+    git clone https://github.com/Cloud-Direct-Monitoring/cd-monitoring-bootstrap customer
     ```
 
      Change `customer` to a customer shortcode.
