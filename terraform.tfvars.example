@@ -5,8 +5,8 @@ customer_subscription_name = ""
 location                   = "UK South"
 workspace_id               = ""
 
-cd_github_repo_name        = ""
-cd_github_pat_value        = ""
+cd_github_repo_name = ""
+cd_github_pat_value = ""
 
 tags = {
   service     = "Terraform"

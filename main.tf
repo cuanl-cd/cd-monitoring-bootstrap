@@ -132,7 +132,7 @@ resource "azurerm_role_assignment" "workspace_contributor" {
   principal_id         = azurerm_user_assigned_identity.github.principal_id
 }
 
-// Github Actions
+// Github Actions - Variables
 
 resource "github_actions_variable" "github" {
   for_each = {
@@ -154,6 +154,8 @@ resource "github_actions_variable" "github" {
   variable_name = each.key
   value         = each.value
 }
+
+// Github Actions - Secrets
 
 resource "github_actions_secret" "client_id" {
   repository      = var.cd_github_repo_name
@@ -177,12 +179,6 @@ resource "github_actions_secret" "ssh_key" {
   repository      = var.cd_github_repo_name
   secret_name     = "SSH_KEY"
   plaintext_value = file("${path.module}/secrets/ssh_key.txt")
-}
-
-resource "github_actions_variable" "ssh_key" {
-  repository    = var.cd_github_repo_name
-  variable_name = "SSH_KEY"
-  value         = file("${path.module}/secrets/ssh_key.txt")
 }
 
 resource "github_actions_secret" "known_hosts" {

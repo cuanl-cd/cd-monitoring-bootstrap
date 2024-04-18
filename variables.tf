@@ -62,8 +62,8 @@ variable "workspace_id" {
   type        = string
 
   validation {
-    condition     = length(var.workspace_id) > 0 && can(regex("^/subscriptions/.*/resourceGroups/.*/providers/.*", var.workspace_id))
-    error_message = "The workspace_id must be a valid GUID."
+    condition     = length(var.workspace_id) > 0 && can(regex("^/subscriptions/.*/resource[Gg]roups/.*/providers/.*", var.workspace_id))
+    error_message = "The workspace_id must be a valid resource ID."
   }
 }
 
