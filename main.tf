@@ -56,8 +56,9 @@ resource "azurerm_storage_container" "state" {
   ]
 }
 
-// User assigned identity and role assignments
+// User assigned identities
 
+// Core managed identity used to create the monitoring resources for the lifecycle of the service.
 resource "azurerm_user_assigned_identity" "github" {
   name                = "id-cdmonitoring-prod-${local.region_short}-001"
   resource_group_name = azurerm_resource_group.rg.name
@@ -74,17 +75,27 @@ resource "azurerm_federated_identity_credential" "github" {
   subject  = "repo:${var.cd_github_org_name}/${var.cd_github_repo_name}:ref:refs/heads/main"
 }
 
+// For optional use in policy assignments. Better naming convention than the system generated name.
+resource "azurerm_user_assigned_identity" "policy" {
+  name                = "id-cdmonitoring-policy-prod-${local.region_short}-001"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+}
+
+// RBAC role assignments
+
 resource "azurerm_role_assignment" "github" {
-  for_each             = toset(["Monitoring Contributor", "Storage Blob Data Contributor"])
+  for_each             = toset(var.rbac ? ["Monitoring Contributor", "Storage Blob Data Contributor"] : [])
   scope                = azurerm_resource_group.rg.id
   role_definition_name = each.value
   principal_id         = azurerm_user_assigned_identity.github.principal_id
 }
 
 resource "azurerm_role_definition" "deployment_stacks_contributor" {
-  name        = "Deployment Stacks Contributor"
+  for_each    = toset(var.rbac ? ["Deployment Stacks Contributor"] : [])
+  name        = "Cloud Direct Deployment Stacks Contributor (${local.uniq})"
   scope       = azurerm_resource_group.rg.id
-  description = "Custom role to manage deployment stacks and deployments."
+  description = "Custom role to manage deployment stacks and deployments. (Cloud Direct Monitoring)"
 
   permissions {
     actions = [
@@ -100,33 +111,15 @@ resource "azurerm_role_definition" "deployment_stacks_contributor" {
 }
 
 resource "azurerm_role_assignment" "deployment_stacks_contributor" {
+  for_each           = toset(var.rbac ? ["Deployment Stacks Contributor"] : [])
   scope              = azurerm_resource_group.rg.id
-  role_definition_id = azurerm_role_definition.deployment_stacks_contributor.role_definition_resource_id
+  role_definition_id = azurerm_role_definition.deployment_stacks_contributor["Deployment Stacks Contributor"].role_definition_resource_id
   principal_id       = azurerm_user_assigned_identity.github.principal_id
 }
 
-/*
-resource "azurerm_role_definition" "workspace_link_contributor" {
-  name        = "Azure Monitor Workspace Link Contributor"
-  scope       = var.workspace_id
-  description = "Custom role to link DCRs to an Azure Monitor workspace."
-
-  permissions {
-    actions = [
-      "Microsoft.Insights/scheduledQueryRules/*",
-      "Microsoft.OperationalInsights/workspaces/read",
-      "Microsoft.OperationalInsights/workspaces/sharedKeys/action"
-    ]
-    not_actions = []
-  }
-
-  assignable_scopes = [
-    var.workspace_id
-  ]
-}
-*/
 
 resource "azurerm_role_assignment" "workspace_contributor" {
+  for_each             = toset(var.rbac ? ["Workspace Contributor"] : [])
   scope                = var.workspace_id
   role_definition_name = "Contributor"
   principal_id         = azurerm_user_assigned_identity.github.principal_id
