@@ -69,6 +69,12 @@ variable "workspace_id" {
 
 // Defaulted variables
 
+variable "rbac" {
+  description = "Specify whether to create the RBAC roles. Set to false if terraform is not running with a privileged account."
+  default     = true
+  type        = bool
+}
+
 variable "location" {
   description = "Specify the Azure region to deploy into."
   default     = "UK South"
