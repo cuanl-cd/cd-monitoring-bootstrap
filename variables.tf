@@ -70,7 +70,7 @@ variable "workspace_id" {
 // Defaulted variables
 
 variable "rbac" {
-  description = "Specify whether to create the RBAC roles. Set to false if you do not have a privileged account.terraform "
+  description = "Specify whether to create the RBAC roles. Set to false if terraform is not running with a privileged account."
   default     = true
   type        = bool
 }
