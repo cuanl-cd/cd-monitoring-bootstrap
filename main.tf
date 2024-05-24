@@ -82,46 +82,22 @@ resource "azurerm_user_assigned_identity" "policy" {
   location            = azurerm_resource_group.rg.location
 }
 
+
+
 // RBAC role assignments
 
-resource "azurerm_role_assignment" "github" {
-  for_each             = toset(var.rbac ? ["Monitoring Contributor", "Storage Blob Data Contributor"] : [])
+resource "azurerm_role_assignment" "resource_group" {
+  for_each             = toset(var.rbac ? ["Azure Deployment Stack Contributor", "Monitoring Contributor", "Storage Blob Data Contributor"] : [])
   scope                = azurerm_resource_group.rg.id
   role_definition_name = each.value
   principal_id         = azurerm_user_assigned_identity.github.principal_id
 }
 
-resource "azurerm_role_definition" "deployment_stacks_contributor" {
-  for_each    = toset(var.rbac ? ["Deployment Stacks Contributor"] : [])
-  name        = "Cloud Direct Deployment Stacks Contributor (${local.uniq})"
-  scope       = azurerm_resource_group.rg.id
-  description = "Custom role to manage deployment stacks and deployments. (Cloud Direct Monitoring)"
 
-  permissions {
-    actions = [
-      "Microsoft.Resources/deploymentStacks/*",
-      "Microsoft.Resources/deployments/*"
-    ]
-    not_actions = []
-  }
-
-  assignable_scopes = [
-    azurerm_resource_group.rg.id
-  ]
-}
-
-resource "azurerm_role_assignment" "deployment_stacks_contributor" {
-  for_each           = toset(var.rbac ? ["Deployment Stacks Contributor"] : [])
-  scope              = azurerm_resource_group.rg.id
-  role_definition_id = azurerm_role_definition.deployment_stacks_contributor["Deployment Stacks Contributor"].role_definition_resource_id
-  principal_id       = azurerm_user_assigned_identity.github.principal_id
-}
-
-
-resource "azurerm_role_assignment" "workspace_contributor" {
-  for_each             = toset(var.rbac ? ["Workspace Contributor"] : [])
+resource "azurerm_role_assignment" "workspace" {
+  for_each             = toset(var.rbac ? ["Contributor"] : [])
   scope                = var.workspace_id
-  role_definition_name = "Contributor"
+  role_definition_name = each.value
   principal_id         = azurerm_user_assigned_identity.github.principal_id
 }
 
