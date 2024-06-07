@@ -28,8 +28,7 @@ jobs:
 
     - name: Terraform fmt 📔
       id: fmt
-      run: terraform fmt -check
-      continue-on-error: true
+      run: terraform fmt
 
     - name: Create dummy files
       run: |
@@ -71,14 +70,6 @@ jobs:
     - name: Run TFLINT
       id: tflint
       run: tflint -f compact
-
-    - name: Generate Terraform Docs 📜
-      uses: terraform-docs/gh-actions@v1.2.0
-      with:
-        working-dir: .
-        output-file: TERRAFORM.md
-        output-method: inject
-        git-push: "true"
 
     - name: Generate Terraform Docs 📜
       uses: terraform-docs/gh-actions@v1.2.0
