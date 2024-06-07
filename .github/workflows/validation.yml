@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - "main"
-  workflow_dispatch:
 
 jobs:
   terraform:
@@ -31,7 +30,7 @@ jobs:
       id: fmt
       run: terraform fmt
 
-    - name: Create dummy files
+    - name: Create dummy files 📄
       run: |
         SECRETS_PATH=${{ github.workspace }}/secrets
         FILES=("github_app.pem" "ssh_key.txt" "known_hosts.txt" "ms_teams_webhook_uri.txt" "action_group_webhook_uri.txt")
@@ -46,7 +45,7 @@ jobs:
       id: validate
       run: terraform validate -no-color
 
-    - name: Remove dummy files
+    - name: Remove dummy files 📄
       run: |
         SECRETS_PATH=${{ github.workspace }}/secrets
         FILES=("github_app.pem" "ssh_key.txt" "known_hosts.txt" "ms_teams_webhook_uri.txt" "action_group_webhook_uri.txt")
@@ -78,9 +77,23 @@ jobs:
         working-dir: .
         output-file: TERRAFORM.md
         output-method: inject
-        git-push: "true"
+        git-push: "false"
 
-    - name: Show detailed job summary 📖
+    - name: Check for changed files 🕵️
+      uses: tj-actions/verify-changed-files@v20
+      id: verify-changed-files
+
+    - name: Commit code changes 🖊️
+      if: steps.verify-changed-files.outputs.files_changed == 'true'
+      uses: EndBug/add-and-commit@v9
+      with:
+        default_author: github_actions
+        message: |
+          "🤖 Automated commit for Workflow Run ID: ${{ github.run_id }} in Branch: ${{ github.head_ref }}"
+
+          "Changed files: ${{ steps.verify-changed-files.outputs.changed_files }}"
+
+    - name: Generate detailed job summary 📖
       run: |
         SUMMARY=$'
         ## Terraform Initialization ⚙️
@@ -93,20 +106,21 @@ jobs:
 
         ## Terraform Validation 🤖
 
-        ${{ steps.validate.outcome }}
+        Outcome: ${{ steps.validate.outcome }}
 
-        ${{ steps.validate.outputs.stdout }}
+        Outputs: ${{ steps.validate.outputs.stdout }}
 
         ## TFLint
 
-        ### Stdout
+        Standard Output:
+
         ${{ steps.tflint.outputs.stdout }}
 
-        ### Stderr
+        Standard Error:
+
         ${{ steps.tflint.outputs.stderr }}
 
-        ### Exitcode
-        ${{ steps.tflint.outputs.exitcode }}
+        Exitcode: ${{ steps.tflint.outputs.exitcode }}
 
         * Pusher: @${{ github.actor }}
         * Action: ${{ github.event_name }}
