@@ -47,11 +47,13 @@ jobs:
     - name: Create dummy files
       run: |
         SECRETS_PATH=${{ github.workspace }}/secrets
-        FILES=("github_app.pem", "ssh_key.txt", "known_hosts.txt", "ms_teams_webhook_uri.txt")
+        FILES=("github_app.pem" "ssh_key.txt" "known_hosts.txt" "ms_teams_webhook_uri.txt")
 
         for FILE in "${FILES[@]}"; do
           echo "dummy content" > "${SECRETS_PATH}/${FILE}"
         done
+
+        echo "Dummy files have been created in ${SECRETS_PATH}"
 
     - name: Terraform Validate ✅
       id: validate
@@ -60,11 +62,13 @@ jobs:
     - name: Remove dummy files
       run: |
         SECRETS_PATH=${{ github.workspace }}/secrets
-        FILES=("github_app.pem", "ssh_key.txt", "known_hosts.txt", "ms_teams_webhook_uri.txt")
+        FILES=("github_app.pem" "ssh_key.txt" "known_hosts.txt" "ms_teams_webhook_uri.txt")
 
         for FILE in "${FILES[@]}"; do
           rm -f "${SECRETS_PATH}/${FILE}"
         done
+
+        echo "Dummy files have been removed from ${SECRETS_PATH}"
 
     - name: Generate Terraform Docs 📜
       uses: terraform-docs/gh-actions@v1.2.0
