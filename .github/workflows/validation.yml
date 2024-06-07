@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - "main"
+  workflow_dispatch:
 
 jobs:
   terraform:
@@ -98,16 +99,19 @@ jobs:
 
         ## TFLint
 
+        ### Stdout
         ${{ steps.tflint.outputs.stdout }}
 
+        ### Stderr
         ${{ steps.tflint.outputs.stderr }}
 
+        ### Exitcode
         ${{ steps.tflint.outputs.exitcode }}
 
-        *Pusher: @${{ github.actor }}
-        *Action: ${{ github.event_name }}
-        *Working Directory: ${{ github.workspace }}
-        *Workflow: ${{ github.workflow }}
+        * Pusher: @${{ github.actor }}
+        * Action: ${{ github.event_name }}
+        * Working Directory: ${{ github.workspace }}
+        * Workflow: ${{ github.workflow }}
         '
 
         echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
