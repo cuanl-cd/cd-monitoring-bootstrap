@@ -47,7 +47,7 @@ jobs:
     - name: Create dummy files
       run: |
         SECRETS_PATH=${{ github.workspace }}/secrets
-        FILES=("github_app.pem" "ssh_key.txt" "known_hosts.txt" "ms_teams_webhook_uri.txt")
+        FILES=("github_app.pem" "ssh_key.txt" "known_hosts.txt" "ms_teams_webhook_uri.txt" "action_group_webhook_uri.txt")
 
         for FILE in "${FILES[@]}"; do
           echo "dummy content" > "${SECRETS_PATH}/${FILE}"
@@ -62,7 +62,7 @@ jobs:
     - name: Remove dummy files
       run: |
         SECRETS_PATH=${{ github.workspace }}/secrets
-        FILES=("github_app.pem" "ssh_key.txt" "known_hosts.txt" "ms_teams_webhook_uri.txt")
+        FILES=("github_app.pem" "ssh_key.txt" "known_hosts.txt" "ms_teams_webhook_uri.txt" "action_group_webhook_uri.txt")
 
         for FILE in "${FILES[@]}"; do
           rm -f "${SECRETS_PATH}/${FILE}"
