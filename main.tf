@@ -156,6 +156,12 @@ resource "github_actions_secret" "known_hosts" {
   plaintext_value = file("${path.module}/secrets/known_hosts.txt")
 }
 
+resource "github_actions_secret" "ms_teams_webhook_uri" {
+  repository = var.cd_github_repo_name
+  secret_name = "MS_TEAMS_WEBHOOK_URI"
+  plaintext_value = file("${path.module}/secrets/ms_teams_webhook_uri.txt")
+}
+
 //Github Repository Files
 
 resource "github_repository_file" "tfvars" {
