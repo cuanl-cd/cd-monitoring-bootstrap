@@ -19,11 +19,16 @@ jobs:
       uses: terraform-linters/setup-tflint@v4
       with:
         tflint_version: latest
+        tflint_wrapper: true
 
     - name: Init TFLint 🚦
       run: tflint --init
       env:
         GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Run TFLINT
+      id: tflint
+      run: tflint -f compact
 
     - name: Install Terraform ⛰️
       uses: hashicorp/setup-terraform@v3
@@ -39,9 +44,27 @@ jobs:
       run: terraform fmt -check
       continue-on-error: true
 
+    - name: Create dummy files
+      run: |
+        SECRETS_PATH=${{ github.workspace }}/secrets
+        FILES=("github_app.pem", "ssh_key.txt", "known_hosts.txt", "ms_teams_webhook_uri.txt")
+
+        for FILE in "${FILES[@]}"; do
+          echo "dummy content" > "${SECRETS_PATH}/${FILE}"
+        done
+
     - name: Terraform Validate ✅
       id: validate
       run: terraform validate -no-color
+
+    - name: Remove dummy files
+      run: |
+        SECRETS_PATH=${{ github.workspace }}/secrets
+        FILES=("github_app.pem", "ssh_key.txt", "known_hosts.txt", "ms_teams_webhook_uri.txt")
+
+        for FILE in "${FILES[@]}"; do
+          rm -f "${SECRETS_PATH}/${FILE}"
+        done
 
     - name: Generate Terraform Docs 📜
       uses: terraform-docs/gh-actions@v1.2.0
@@ -63,6 +86,25 @@ jobs:
 
           \`\`\`\n
           ${{ steps.validate.outputs.stdout }}
+          \`\`\`
+
+          #### TFLint
+          <details><summary>TFLint Stdout</summary>
+
+          \`\`\`\n
+          ${{ steps.tflint.outputs.stdout }}
+          \`\`\`
+
+          <details><summary>TFLint Sterr</summary>
+
+          \`\`\`\n
+          ${{ steps.tflint.outputs.stderr }}
+          \`\`\`
+
+          <details><summary>TFLint Exitcode</summary>
+
+          \`\`\`\n
+          ${{ steps.tflint.outputs.exitcode }}
           \`\`\`
 
           *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ github.workspace }}\`, Workflow: \`${{ github.workflow }}\`*`;
