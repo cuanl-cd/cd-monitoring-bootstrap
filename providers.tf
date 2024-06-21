@@ -15,6 +15,7 @@ provider "azurerm" {
   features {}
   subscription_id     = var.customer_subscription_id
   storage_use_azuread = true
+  tenant_id           = var.customer_tenant_id
 }
 
 provider "github" {
