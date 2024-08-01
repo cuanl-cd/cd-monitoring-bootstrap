@@ -30,15 +30,23 @@ resource "azurerm_storage_account" "state" {
   location            = azurerm_resource_group.rg.location
   tags                = var.tags
 
-  account_tier              = "Standard"
-  account_kind              = "BlobStorage"
-  account_replication_type  = "GRS"
-  enable_https_traffic_only = true
+  account_tier             = "Standard"
+  account_kind             = "StorageV2"
+  account_replication_type = "LRS"
+  access_tier              = "Cool"
+
+  min_tls_version                 = "TLS1_2"
+  enable_https_traffic_only       = true
+  shared_access_key_enabled       = false
+  public_network_access_enabled   = true
+  default_to_oauth_authentication = true
+  local_user_enabled              = false
+  allow_nested_items_to_be_public = false
 
   blob_properties {
     versioning_enabled = true
     delete_retention_policy {
-      days = 365
+      days = 90
     }
     container_delete_retention_policy {
       days = 90
@@ -78,6 +86,13 @@ resource "azurerm_federated_identity_credential" "github" {
 // For optional use in policy assignments. Better naming convention than the system generated name.
 resource "azurerm_user_assigned_identity" "policy" {
   name                = "id-cdmonitoring-policy-prod-${local.region_short}-001"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+}
+
+// Managed Identity assigned to VMs with no permissions for AMA Agent deployment through Policy Initiative
+resource "azurerm_user_assigned_identity" "vm" {
+  name                = "id-cdmonitoring-vm-prod-${local.region_short}-001"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
 }
