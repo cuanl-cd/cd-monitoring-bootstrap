@@ -16,12 +16,12 @@ jobs:
     steps:
 
     - name: Checkout 🔔
-      uses: actions/checkout@v4
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
       with:
         ref: ${{ github.event.pull_request.head.ref }}
 
     - name: Install Terraform ⛰️
-      uses: hashicorp/setup-terraform@v3
+      uses: hashicorp/setup-terraform@651471c36a6092792c552e8b1bef71e592b462d8 # v3
       with:
         terraform_version: latest
 
@@ -60,7 +60,7 @@ jobs:
         echo "Dummy files have been removed from ${SECRETS_PATH}"
 
     - name: Setup TFLint 🖌️
-      uses: terraform-linters/setup-tflint@v4
+      uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4
       with:
         tflint_version: latest
         tflint_wrapper: true
@@ -75,7 +75,7 @@ jobs:
       run: tflint -f compact
 
     - name: Generate Terraform Docs 📜
-      uses: terraform-docs/gh-actions@v1.2.0
+      uses: terraform-docs/gh-actions@e47bfa196e79fa50987ef391be236d9d97b0c786 # v1.2.0
       with:
         find-dir: .
         output-file: TERRAFORM.md
