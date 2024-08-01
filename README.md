@@ -2,7 +2,7 @@
 
 Professional Services repo to bootstrap a customer environment for the deployment of monitoring resources.
 
-## Prereqs
+## Prerequisites
 
 Managed Services will provide a set of info for the bootstrap process:
 
@@ -45,7 +45,7 @@ You will also need the git binary installed on your machine. Visual Studio Code 
 
 ## Customise
 
-An terraform.tfvars file has been provided.
+A terraform.tfvars file has been provided.
 
 1. Rename terraform.tfvars.example, removing the .example extension
 1. Customise the values
