@@ -77,24 +77,11 @@ jobs:
     - name: Generate Terraform Docs 📜
       uses: terraform-docs/gh-actions@v1.2.0
       with:
-        working-dir: .
+        find-dir: .
         output-file: TERRAFORM.md
-        output-method: inject
-        git-push: "false"
-
-    - name: Check for changed files 🕵️
-      uses: tj-actions/verify-changed-files@v20
-      id: verify-changed-files
-
-    - name: Commit code changes 🖊️
-      if: steps.verify-changed-files.outputs.files_changed == 'true'
-      uses: EndBug/add-and-commit@v9
-      with:
-        default_author: github_actions
-        message: |
-          "🤖 Automated commit for Workflow Run ID: ${{ github.run_id }} in Branch: ${{ github.head_ref }}"
-
-          "Changed files: ${{ steps.verify-changed-files.outputs.changed_files }}"
+        output-method: replace
+        git-push: "true"
+        git-commit-message: "docs: 🤖 Update Terraform Docs for Workflow Run ID: ${{ github.run_id }} in Branch: ${{ github.head_ref }}"
 
     - name: Generate detailed job summary 📖
       run: |
