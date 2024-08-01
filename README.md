@@ -2,7 +2,7 @@
 
 Professional Services repo to bootstrap a customer environment for the deployment of monitoring resources.
 
-## Prereqs
+## Prerequisites
 
 Managed Services will provide a set of info for the bootstrap process:
 
