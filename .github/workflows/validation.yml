@@ -1,0 +1,121 @@
+name: CI Validation
+
+on:
+  pull_request:
+    branches:
+      - "main"
+
+permissions:
+  contents: write
+
+jobs:
+  terraform:
+    name: Terraform Validation
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout 🔔
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+
+    - name: Install Terraform ⛰️
+      uses: hashicorp/setup-terraform@651471c36a6092792c552e8b1bef71e592b462d8 # v3
+      with:
+        terraform_version: latest
+
+    - name: Terraform Init 🏃
+      id: init
+      run: terraform init
+
+    - name: Terraform fmt 📔
+      id: fmt
+      run: terraform fmt
+
+    - name: Create dummy files 📄
+      run: |
+        SECRETS_PATH=${{ github.workspace }}/secrets
+        FILES=("github_app.pem" "ssh_key.txt" "known_hosts.txt" "ms_teams_webhook_uri.txt" "action_group_webhook_uri.txt")
+
+        for FILE in "${FILES[@]}"; do
+          echo "dummy content" > "${SECRETS_PATH}/${FILE}"
+        done
+
+        echo "Dummy files have been created in ${SECRETS_PATH}"
+
+    - name: Terraform Validate ✅
+      id: validate
+      run: terraform validate -no-color
+
+    - name: Remove dummy files 📄
+      run: |
+        SECRETS_PATH=${{ github.workspace }}/secrets
+        FILES=("github_app.pem" "ssh_key.txt" "known_hosts.txt" "ms_teams_webhook_uri.txt" "action_group_webhook_uri.txt")
+
+        for FILE in "${FILES[@]}"; do
+          rm -f "${SECRETS_PATH}/${FILE}"
+        done
+
+        echo "Dummy files have been removed from ${SECRETS_PATH}"
+
+    - name: Setup TFLint 🖌️
+      uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4
+      with:
+        tflint_version: latest
+        tflint_wrapper: true
+
+    - name: Init TFLint 🚦
+      run: tflint --init
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Run TFLINT
+      id: tflint
+      run: tflint -f compact
+
+    - name: Generate Terraform Docs 📜
+      uses: terraform-docs/gh-actions@e47bfa196e79fa50987ef391be236d9d97b0c786 # v1.2.0
+      with:
+        find-dir: .
+        output-file: TERRAFORM.md
+        output-method: replace
+        git-push: "true"
+        git-commit-message: "docs: 🤖 Update Terraform Docs for Workflow Run ID: ${{ github.run_id }} in Branch: ${{ github.head_ref }}"
+
+    - name: Generate detailed job summary 📖
+      run: |
+        SUMMARY=$'
+        ## Terraform Initialization ⚙️
+
+        ${{ steps.init.outcome }}
+
+        ## Terraform Format 🖌
+
+        ${{ steps.fmt.outcome }}
+
+        ## Terraform Validation 🤖
+
+        Outcome: ${{ steps.validate.outcome }}
+
+        Outputs: ${{ steps.validate.outputs.stdout }}
+
+        ## TFLint
+
+        Standard Output:
+
+        ${{ steps.tflint.outputs.stdout }}
+
+        Standard Error:
+
+        ${{ steps.tflint.outputs.stderr }}
+
+        Exitcode: ${{ steps.tflint.outputs.exitcode }}
+
+        * Pusher: @${{ github.actor }}
+        * Action: ${{ github.event_name }}
+        * Working Directory: ${{ github.workspace }}
+        * Workflow: ${{ github.workflow }}
+        '
+
+        echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
