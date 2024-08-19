@@ -87,7 +87,7 @@ resource "azurerm_user_assigned_identity" "policy" {
 // RBAC role assignments
 
 resource "azurerm_role_assignment" "resource_group" {
-  for_each             = toset(var.rbac ? ["Azure Deployment Stack Contributor", "Monitoring Contributor", "Storage Blob Data Contributor"] : [])
+  for_each             = toset(var.rbac ? ["Azure Deployment Stack Owner", "Monitoring Contributor", "Storage Blob Data Contributor"] : [])
   scope                = azurerm_resource_group.rg.id
   role_definition_name = each.value
   principal_id         = azurerm_user_assigned_identity.github.principal_id

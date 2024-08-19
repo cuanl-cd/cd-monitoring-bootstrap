@@ -1,7 +1,7 @@
 output "rbac_commands" {
   value = var.rbac ? null : <<-EOF
 
-  az role assignment create --assignee ${azurerm_user_assigned_identity.github.principal_id} --role "Azure Deployment Stack Contributor" \
+  az role assignment create --assignee ${azurerm_user_assigned_identity.github.principal_id} --role "Azure Deployment Stack Owner" \
     --scope ${azurerm_resource_group.rg.id}
 
   az role assignment create --assignee ${azurerm_user_assigned_identity.github.principal_id} --role "Monitoring Contributor" \
