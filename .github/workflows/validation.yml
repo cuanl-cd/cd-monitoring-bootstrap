@@ -4,13 +4,17 @@ on:
   pull_request:
     branches:
       - "main"
+  push:
+    branches:
+      - "main"
 
 permissions:
   contents: write
 
 jobs:
-  terraform:
+  terraform_validation:
     name: Terraform Validation
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
 
     steps:
@@ -29,10 +33,6 @@ jobs:
     - name: Terraform Init 🏃
       id: init
       run: terraform init
-
-    - name: Terraform fmt 📔
-      id: fmt
-      run: terraform fmt
 
     - name: Create dummy files 📄
       run: |
@@ -60,6 +60,50 @@ jobs:
 
         echo "Dummy files have been removed from ${SECRETS_PATH}"
 
+    - name: Generate detailed job summary 📖
+      run: |
+        SUMMARY=$'
+        ## Terraform Initialization ⚙️
+
+        ${{ steps.init.outcome }}
+
+        ## Terraform Validation 🤖
+
+        Outcome: ${{ steps.validate.outcome }}
+
+        Outputs: ${{ steps.validate.outputs.stdout }}
+
+        * Pusher: @${{ github.actor }}
+        * Action: ${{ github.event_name }}
+        * Working Directory: ${{ github.workspace }}
+        * Workflow: ${{ github.workflow }}
+        '
+
+        echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+
+  documentation:
+    name: Terraform Documentation
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout 🔔
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+
+    - name: Install Terraform ⛰️
+      uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+      with:
+        terraform_version: latest
+
+    - name: Terraform Init 🏃
+      id: init
+      run: terraform init
+
+    - name: Terraform fmt 📔
+      id: fmt
+      run: terraform fmt
+
     - name: Setup TFLint 🖌️
       uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4
       with:
@@ -76,6 +120,7 @@ jobs:
       run: tflint -f compact
 
     - name: Generate Terraform Docs 📜
+      id: tfdocs
       uses: terraform-docs/gh-actions@e47bfa196e79fa50987ef391be236d9d97b0c786 # v1.2.0
       with:
         find-dir: .
@@ -95,12 +140,6 @@ jobs:
 
         ${{ steps.fmt.outcome }}
 
-        ## Terraform Validation 🤖
-
-        Outcome: ${{ steps.validate.outcome }}
-
-        Outputs: ${{ steps.validate.outputs.stdout }}
-
         ## TFLint
 
         Standard Output:
@@ -112,6 +151,12 @@ jobs:
         ${{ steps.tflint.outputs.stderr }}
 
         Exitcode: ${{ steps.tflint.outputs.exitcode }}
+
+        ## Terraform Docs
+
+        Changed Files:
+
+        ${{ steps.tfdocs.outputs.num_changed }}
 
         * Pusher: @${{ github.actor }}
         * Action: ${{ github.event_name }}
